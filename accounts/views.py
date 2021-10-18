@@ -74,9 +74,9 @@ class LoginAPI(generics.GenericAPIView):
     #@unauthenticated_user # not required to logout, refresh token
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if request.data['username'].strip() == "": 
+        if request.data['username'] == "": 
             return response_bad_request({"username":"This field is required."})
-        if request.data['password'].strip() == "":
+        if request.data['password'] == "":
             return response_bad_request({"password":"This field is required."})
         
         if serializer.is_valid():
