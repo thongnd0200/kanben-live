@@ -52,7 +52,6 @@ class RegisterAPI(APIView):
             return response_bad_request({"email":"This field is required."})
         
         if password != '' and 6 <= len(password) <= 32:
-            
             serializer.is_valid()
             serializer.save()
             user_data = serializer.data

@@ -27,14 +27,7 @@ SECRET_KEY = 'h4lw7&*oq89f_j6b2fq_$jll-23c4wfsawlghzude^l2t(=8u!'
 DEBUG = False
 
 ALLOWED_HOSTS = ['kanben-deploy.herokuapp.com', '*']
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
+
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -62,7 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.common.BrokenLinkEmailsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+    #'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -74,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'kanben.urls'
-
+CORS_ORIGIN_ALLOW_ALL = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -149,7 +142,7 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication', #
     ],
     'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.FormParser',
+        #'rest_framework.parsers.FormParser',
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser'
     ],
@@ -170,4 +163,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 PAGINATION_PAGE_SIZE = 10
 OUTPUT_MAX_LENGTH = 255
 TOKEN_EXPIRE_AFTER_SECONDS = 14400
-CORS_ORIGIN_ALLOW_ALL = True
