@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication', #
     ],
     'DEFAULT_PARSER_CLASSES': [
-        #'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.FormParser',
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser'
     ],
