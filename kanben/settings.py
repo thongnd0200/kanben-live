@@ -26,7 +26,7 @@ SECRET_KEY = 'h4lw7&*oq89f_j6b2fq_$jll-23c4wfsawlghzude^l2t(=8u!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['kanben-deploy.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['kanben-deploy.herokuapp.com', '*']
 
 
 # Application definition
@@ -47,11 +47,14 @@ INSTALLED_APPS = [
     'authenticate',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -158,3 +161,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 PAGINATION_PAGE_SIZE = 10
 OUTPUT_MAX_LENGTH = 255
 TOKEN_EXPIRE_AFTER_SECONDS = 14400
+CORS_ORIGIN_ALLOW_ALL = True
