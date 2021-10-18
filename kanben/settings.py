@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'h4lw7&*oq89f_j6b2fq_$jll-23c4wfsawlghzude^l2t(=8u!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['kanben-deploy.herokuapp.com', '*']
 
@@ -54,10 +54,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.common.BrokenLinkEmailsMiddleware',
-    #'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,8 +65,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'kanben.urls'
 CORS_ORIGIN_ALLOW_ALL = True
+
+ROOT_URLCONF = 'kanben.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -142,7 +143,7 @@ REST_FRAMEWORK = {
         #'rest_framework.authentication.BasicAuthentication', #
     ],
     'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.FormParser',
+        #'rest_framework.parsers.FormParser',
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser'
     ],
