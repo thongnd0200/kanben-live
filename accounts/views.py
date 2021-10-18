@@ -23,24 +23,32 @@ def utc_now():
 	utc_now = utc_now.replace(tzinfo=pytz.utc)
 	return utc_now
 
+class ImageExtensionValidator:
+	VALID_IMAGE_EXTENSIONS = [
+		".jpg", ".jpeg", ".png", ".gif",
+	]
+
+	def validate(path, extension_list=VALID_IMAGE_EXTENSIONS):
+		return any([path.endswith(e) for e in extension_list])
+
+
 class RegisterAPI(APIView):
-    
+    '''
+    For Registering a new account
+    '''
     serializer_class = RegisterSerializer
     
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
-        username = data['username']
-        email = data['email']
-        password = data['password']
-        
-
+        username = data.get("username", '')
+        email = data.get("email", '')
+        password =  data.get("password",'')
         if username != '' and username.isalnum():
             if User.objects.filter(username=data["username"].lower()).exists():
                 return response_bad_request({"username":"This username already exists"})
-        else:
+        else: 
             return response_bad_request({"username":"Username can only contain alphanumeric characters."})
-        
         if email != '':
             try:
                 validate_email(email)
@@ -50,13 +58,12 @@ class RegisterAPI(APIView):
                 return response_bad_request({"email":"This email is invalid"})
         else:
             return response_bad_request({"email":"This field is required."})
-        
         if password != '' and 6 <= len(password) <= 32:
             serializer.is_valid()
             serializer.save()
             user_data = serializer.data
             return response_created(user_data)
-          
+    
         return response_bad_request({"password":"The password length must be more than 8 with letters and numbers."})
     
 
@@ -64,12 +71,12 @@ class LoginAPI(generics.GenericAPIView):
     serializer_class = LoginSerializer
     authentication_classes = [SessionAuthentication]
 
-    
+    #@unauthenticated_user # not required to logout, refresh token
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if request.data['username'].strip() == "": 
+        if request.data.get("username").strip() == "": 
             return response_bad_request({"username":"This field is required."})
-        if request.data['password'].strip() == "":
+        if request.data.get("password").strip() == "":
             return response_bad_request({"password":"This field is required."})
         
         if serializer.is_valid():
@@ -119,55 +126,28 @@ class OwnProfilePageAPI(generics.GenericAPIView):
         user = request.user
         data = request.data
 
-        if data['username'] != '':
+        if data.get("username", '') != '':
             if User.objects.filter(username=data["username"].lower()).exclude(id=user.id).exists():
                 return response_bad_request({"username":"This username already exists"})
             user.username = data["username"].lower()
 
-        if data['password'] != '':
+        if data.get("password", '') != '':
             return response_bad_request("Please use profile/change-password API for password changing")
 
-        if data['email'] != '':
+        if data.get("email", '') != '':
             if User.objects.filter(email=data["email"].lower()).exclude(id=user.id).exists():
                 return response_bad_request({"email":"This email already exists"})
             user.email = data["email"].lower()
 
-        # if data.get("profile_pic", '') != '':
-        #     if IEV.validate(str(data["profile_pic"])):
-        #         user.reset_profile_pic()
-        #         user.profile_pic = data["profile_pic"]
-        #     else:
-        #         return response_bad_request({"profile_pic":"The file must have an image extension of .jpg, .jpeg or .png"})
+        if data.get("profile_pic", '') != '':
+            if ImageExtensionValidator.validate(str(data["profile_pic"])):
+                user.reset_profile_pic()
+                user.profile_pic = data["profile_pic"]
+            else:
+                return response_bad_request({"profile_pic":"The file must have an image extension of .jpg, .jpeg or .png"})
         user.save()
 
         return response_ok(ProfilePageNoPasswordSerializer(user, context=self.get_serializer_context()).data)
-
-    # @login_required
-    # def delete(self, request):
-    #     """
-    #     Delete avatar - not the user
-    #     """
-    #     user = request.user
-    #     default_profile_pic = User._meta.get_field('profile_pic').get_default()
-    #     if user.profile_pic == default_profile_pic:
-    #         return response_bad_request("This user is using the default avatar")
-
-    #     try:
-    #         filepath = os.path.join(MEDIA_ROOT, str(user.profile_pic))
-    #         if not os.path.exists(filepath):
-    #             user.profile_pic = default_profile_pic
-    #             user.save()
-    #             return response_no_content("Your avatar file could not be located. Resetting it to default.")
-
-    #         os.remove(filepath)
-    #         user.profile_pic = default_profile_pic
-    #         user.save()
-    #     except Exception as e:
-    #         logging.debug(
-    #             f"Exception occured when trying to delete avatar\n {e}")
-    #         return response_internal_error("Cannot delete your avatar at the moment")
-
-    #     return response_no_content("Delete avatar successfully.")
 
 
 class LogoutAPI(APIView):
