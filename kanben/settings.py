@@ -27,7 +27,16 @@ SECRET_KEY = 'h4lw7&*oq89f_j6b2fq_$jll-23c4wfsawlghzude^l2t(=8u!'
 DEBUG = False
 
 ALLOWED_HOSTS = ['kanben-deploy.herokuapp.com', '*']
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
 
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
