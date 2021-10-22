@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -138,6 +138,7 @@ USE_TZ = True
 AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         #'rest_framework.authentication.TokenAuthentication',
         'authenticate.models.ExpiringTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
@@ -165,3 +166,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 PAGINATION_PAGE_SIZE = 10
 OUTPUT_MAX_LENGTH = 255
 TOKEN_EXPIRE_AFTER_SECONDS = 14400
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'emailsender100000@gmail.com'
+EMAIL_HOST_PASSWORD = '!1q@2w#3e'
