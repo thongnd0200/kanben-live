@@ -115,10 +115,8 @@ class LoginAPI(generics.GenericAPIView):
                 logout(request)
 
             try:
-                user.is_verified = True
-                user.save()
-                # if user.is_verified == False:
-                #     return response_bad_request("Your account hasn't been verified yet! Please check your email for verification link!")
+                if user.is_verified == False:
+                    return response_bad_request("Your account hasn't been verified yet! Please check your email for verification link!")
                 login(request, user)
                 # print(user.is_verified)
             except FileNotFoundError:
