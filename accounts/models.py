@@ -40,7 +40,6 @@ class UserManager(BaseUserManager):
             user.is_superuser = True
             user.is_staff = True
             user.is_active = True
-            user.is_verified = True
             user.save()
             return user
 
@@ -86,6 +85,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def is_admin(self):
         return self.admin_type == AdminType.ADMIN
+
+    def is_using_default_profile_pic(self):
+        return self.profile_pic == User._meta.get_field('profile_pic').get_default() 
 
     def reset_profile_pic(self):
         if not self.is_using_default_profile_pic():
