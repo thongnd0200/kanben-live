@@ -47,9 +47,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     TYPES_OF_GENDER = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('U','Unknown')
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Unknown','Unknown')
     )
     
     username = models.CharField(max_length=20,unique=True, db_index=True)

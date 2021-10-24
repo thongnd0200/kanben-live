@@ -194,6 +194,21 @@ class OwnProfilePageAPI(generics.GenericAPIView):
                 return response_bad_request({"email": "This email already exists"})
             user.email = data["email"].lower()
 
+        if data.get('gender', '') != '':
+            if str(data['gender']) not in ['Male','Female','Unknown']:
+                return response_bad_request({'gender':'Unvalid data! Gender must be Male, Female or Unknown'})
+            user.gender = data['gender']
+        
+        if data.get('date_of_birth', '') != '':
+            import datetime
+            date_of_birth = data['date_of_birth']
+            format = "%Y-%m-%d"
+            try:
+                datetime.datetime.strptime(date_of_birth, format)
+            except ValueError:
+                return response_bad_request({'date_of_birth': 'This is the incorrect date string format. It should be YYYY-MM-DD'})
+            user.date_of_birth = data['date_of_birth']
+        
         if data.get("profile_pic", '') != '':
             if ImageExtensionValidator.validate(str(data["profile_pic"])):
                 user.reset_profile_pic()
