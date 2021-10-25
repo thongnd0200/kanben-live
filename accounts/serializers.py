@@ -80,9 +80,9 @@ class ChangePasswordSerializer(serializers.Serializer):
     new_password2 = serializers.CharField(
         max_length=128, write_only=True, required=True)
 
-    def validate_new_password1(self, value):
-        validate_password(value)
-        return value
+    # def validate_new_password1(self, value):
+    #     validate_password(value)
+    #     return value
 
     def save(self, **kwargs):
         password = self.validated_data['new_password1']
