@@ -5,8 +5,8 @@ from accounts.views import *
 urlpatterns = [
     path('register/', RegisterAPI.as_view()),
     path('profile/', OwnProfilePageAPI.as_view()),
-    #path('profile/<int:id>', ProfilePageAPI.as_view()),
-    #path('profile/change-password/', ChangePasswordAPI().as_view()),
+    path('profile/<int:id>', ProfilePageAPI.as_view()),
+    path('profile/change-password/', ChangePasswordAPI().as_view()),
 
     path('login/', LoginAPI.as_view()),
     path('logout/', LogoutAPI.as_view()),

@@ -56,7 +56,7 @@ class UserCreationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class ProfilePageSerializer(serializers.ModelSerializer):
-    #profile_pic = serializers.ImageField(default='avatar/__default__.png')
+    profile_pic = serializers.ImageField(default='profile1.png')
 
     class Meta:
         model = User
@@ -64,7 +64,7 @@ class ProfilePageSerializer(serializers.ModelSerializer):
 
 
 class ProfilePageNoPasswordSerializer(serializers.ModelSerializer):
-    #profile_pic = serializers.ImageField(default='avatar/__default__.png')
+    profile_pic = serializers.ImageField(default='profile1.png')
     
 
     class Meta:

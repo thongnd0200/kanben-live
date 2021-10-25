@@ -222,9 +222,42 @@ class OwnProfilePageAPI(generics.GenericAPIView):
         return response_ok(ProfilePageNoPasswordSerializer(user, context=self.get_serializer_context()).data)
 
 
+class ProfilePageAPI(APIView):
+    def get(self, request, id):
+        if not User.objects.filter(id=id).exists():
+            return response_not_found(f"User with id={id} could not be found.")
+        return response_ok(ProfilePageNoPasswordSerializer(User.objects.get(id=id)).data)
+
+
 class LogoutAPI(APIView):
     # @login_required
     def get(self, request):
         request.user.auth_token.delete()
         logout(request)
         return response_no_content("User logout.")
+
+
+class ChangePasswordAPI(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+
+    # @login_required
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        data = request.data
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            old_password = data.get('old_password', '')
+
+            if not user.check_password(old_password):
+                return response_bad_request({"old_password":"Your old password was entered incorrectly. Please enter it again."})
+
+            if data.get('new_password1', '') != '' and data.get('new_password1', '') == data.get('new_password2', ''):
+                user = serializer.save()
+            # create a new token
+                if hasattr(user, 'auth_token'):
+                    user.auth_token.delete()
+                token, created = Token.objects.get_or_create(user=user)
+            # return new token
+                return response_ok({'token': token.key, 'noti': 'success!'})
+            return response_bad_request({"entered_password":"The two password fields didn't match."})
+        return response_bad_request({"entered_password":"Password is not valid."})
