@@ -260,4 +260,4 @@ class ChangePasswordAPI(generics.UpdateAPIView):
             # return new token
                 return response_ok({'token': token.key, 'noti': 'success!'})
             return response_bad_request({"entered_password":"The two password fields didn't match."})
-        return response_bad_request({"entered_password":"Password is not valid."})
+        return response_bad_request({"entered_password":"Password is not valid. The password length must be more than 6 with letters and numbers."})
