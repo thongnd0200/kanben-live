@@ -84,3 +84,15 @@ class OwnFolderAPI(generics.GenericAPIView):
             return response_ok(data)
         except Exception:
             return response_bad_request("User does not exist.")
+
+
+class ListFolderAPI(generics.GenericAPIView):
+    serialiser_class = FolderSerializer
+
+    def get(self, request):
+        try:
+            folder_list = Folders.objects.filter(visibility=True)
+            data = FolderSerializer(folder_list, many=True).data
+            return response_ok(data)
+        except Exception:
+            return response_bad_request("Request denied.")
