@@ -1,22 +1,32 @@
-from os import name
 from django.db import models
-from django.db.models.deletion import CASCADE
 from accounts.models import User
-from django.db.models.fields.related import ForeignKey
-
 
 # Create your models here.
 
 
 class Folders(models.Model):
-    user = models.ForeignKey(User, on_delete=CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=50, null=True)
-    visibility = models.BooleanField(default=False, null=True)
+    visibility = models.BooleanField(default=True, null=True)
     result = models.IntegerField(null=True)
 
 
     def __str__(self) -> str:
         return self.name
+
+    def author_id(self):
+        if self.user:
+            return self.user.id
+        return None
+
+    def author_name(self):
+        if self.user:
+            return self.user.username
+        return None
+    
+    def list_vocabularies(self):
+        all_vocabularies = self.vocabularies_set.all().values()
+        return [dict(vocabulary) for vocabulary in all_vocabularies]
     
     @property
     def get_vocabularies(self):

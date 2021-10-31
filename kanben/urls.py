@@ -23,5 +23,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', include('vocabularies.urls')),
     # path('', include('quizzes.urls')),
-    # path('', include('folders.urls')),
+    path('', include('folders.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

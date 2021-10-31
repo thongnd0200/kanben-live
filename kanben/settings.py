@@ -94,8 +94,12 @@ WSGI_APPLICATION = 'kanben.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'kanben_live',
+        'USER': 'postgres',
+        'PASSWORD': 'superadmin',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
