@@ -79,7 +79,7 @@ class OwnFolderAPI(generics.GenericAPIView):
     def get(self, request, id):
         try:
             user = User.objects.get(id=id)
-            folder_list = Folders.objects.filter(user__id=id)
+            folder_list = Folders.objects.filter(user__id=id, visibility=True)
             data = FolderSerializer(folder_list, many=True).data
             return response_ok(data)
         except Exception:
