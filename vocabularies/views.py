@@ -35,6 +35,10 @@ class SearchingApi(generics.GenericAPIView):
         data = request.data
         print(data)
         vocabulary = data.get('vocabulary', '')
+        folder = data.get('folders', '')
+        if vocabulary != '' and folder != '':
+            if Vocabularies.objects.filter(folders=folder, vocabulary=vocabulary).exists():
+                return response_bad_request({"vocabulary": "This vocabulary already exists in this folder"})
         # definitions = json.loads(data.get('definitions'))
         # reading = json.loads(data.get('reading'))
         definitions = data.get('definitions')
@@ -43,6 +47,8 @@ class SearchingApi(generics.GenericAPIView):
             data={'vocabulary': vocabulary, 'definitions': definitions, 'reading': reading, 'folders': data['folders']})
         
         if serializer.is_valid() == True:
+            if folder == '':
+                return response_bad_request({"folder": "folder can't be blanked"})
             if vocabulary == '':
                 return response_bad_request({"vocabulary": "vocabulary can't be blanked"})
             if definitions == '':

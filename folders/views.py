@@ -24,7 +24,9 @@ class FolderAPI(generics.GenericAPIView):
 
             if serializer.is_valid() == True:
                 name = data.get('name', '')
-
+                
+                if Folders.objects.filter(user=request.user, name=name).exists():
+                    return response_bad_request({"name": "This folder's name already exists!"})
                 if name == "":
                     return response_bad_request({"name": "This field cannot be blank."})
                 serializer.save()
