@@ -11,7 +11,8 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.authtoken.models import Token
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from accounts.models import User
+from accounts.decorators import *
+from accounts.models import AdminType, User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -51,7 +52,7 @@ class RegisterAPI(APIView):
     For Registering a new account
     '''
     serializer_class = RegisterSerializer
-
+    @unauthenticated_user
     def post(self, request):
         data = request.data
         serializer = self.serializer_class(data=data)
@@ -142,7 +143,7 @@ class LoginAPI(generics.GenericAPIView):
                 "TTL": int(TOKEN_EXPIRE_AFTER_SECONDS - (utc_now() - token.created).total_seconds()+0.5),
             })
         else:
-            return response_bad_request({"username": "Username or Password is incorrect. Try again."})
+            return response_bad_request({"username": "Username or Password is incorrect. Try again.", "account": "If you sure that entered account is correct, your account maybe have been looked by admin!"})
 
 
 class VerifyEmail(generics.GenericAPIView):
@@ -173,12 +174,12 @@ class VerifyEmail(generics.GenericAPIView):
 class OwnProfilePageAPI(generics.GenericAPIView):
     serializer_class = ProfilePageNoPasswordSerializer
 
-    # @login_required
+    @login_required
     def get(self, request):
         user = request.user
         return response_ok(ProfilePageNoPasswordSerializer(user, context=self.get_serializer_context()).data)
 
-    # @login_required
+    @login_required
     def put(self, request):
         user = request.user
         data = request.data
@@ -223,6 +224,7 @@ class OwnProfilePageAPI(generics.GenericAPIView):
 
 
 class ProfilePageAPI(APIView):
+    @admin_required
     def get(self, request, id):
         if not User.objects.filter(id=id).exists():
             return response_not_found(f"User with id={id} could not be found.")
@@ -230,7 +232,7 @@ class ProfilePageAPI(APIView):
 
 
 class LogoutAPI(APIView):
-    # @login_required
+    @login_required
     def get(self, request):
         request.user.auth_token.delete()
         logout(request)
@@ -240,7 +242,7 @@ class LogoutAPI(APIView):
 class ChangePasswordAPI(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
 
-    # @login_required
+    @login_required
     def update(self, request, *args, **kwargs):
         user = request.user
         data = request.data
@@ -261,3 +263,59 @@ class ChangePasswordAPI(generics.UpdateAPIView):
                 return response_ok({'token': token.key, 'noti': 'success!'})
             return response_bad_request({"entered_password":"The two password fields didn't match."})
         return response_bad_request({"entered_password":"Password is not valid. The password length must be more than 6 with letters and numbers."})
+
+
+class UserAPI(APIView):
+    @admin_required
+    def get(self, request):
+        user = User.objects.all()
+        #user = auto_apply(user, request)
+        user_sdata = UserSerializer(user, many=True).data
+
+        return response_ok(user_sdata)
+
+
+class UserDetailAPI(APIView):
+    @admin_required
+    def get(self, request, id):
+        """
+        Get specific user
+        """
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return response_not_found(f"User with id={id} could not be found.")
+        return response_ok(UserSerializer(user).data)
+
+    @admin_required
+    def put(self, request, id):
+        """
+        Update a specific user
+        """
+        data = request.data
+        UPDATE_FIELDS = ["is_active", "admin_type"]
+        for field in UPDATE_FIELDS:
+            data[field] = data.get(field, '')
+
+        # Try validate
+        try:
+            user = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return response_bad_request("User does not exist")
+
+        if data["admin_type"] != '':
+            if data["admin_type"] not in AdminType.TYPE:
+                return response_bad_request("admin_type \'{}\' is not valid.".format(data["admin_type"]))
+            user.admin_type = data["admin_type"]
+
+        if data["is_active"] != '':
+            if data["is_active"] not in ['true', 'false']:
+                return response_bad_request("is_active '{}' should be either 'true' or 'false'.".format(data["is_active"]))
+            if data["is_active"] == 'true':
+                user.is_active = True
+            else:
+                user.is_active = False
+
+        user.save()
+
+        return response_ok(UserSerializer(user).data)

@@ -11,7 +11,7 @@ urlpatterns = [
     path('login/', LoginAPI.as_view()),
     path('logout/', LogoutAPI.as_view()),
 
-    path('email-verify/', VerifyEmail.as_view(), name='email-verify')
-    #path('admin/users/', UserAPI.as_view()),
-    #path('admin/users/<int:id>', UserDetailAPI.as_view()),
+    path('email-verify/', VerifyEmail.as_view(), name='email-verify'),
+    path('admin/users/', UserAPI.as_view()),
+    path('admin/users/<int:id>', UserDetailAPI.as_view()),
 ]
