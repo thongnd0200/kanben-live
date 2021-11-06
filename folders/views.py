@@ -1,4 +1,5 @@
 from rest_framework import generics
+from accounts.decorators import login_required
 from folders.serializers import *
 from utils.make_response import *
 
@@ -7,6 +8,7 @@ from utils.make_response import *
 class FolderAPI(generics.GenericAPIView):
     serializer_class = FolderSerializer
 
+    @login_required
     def get(self, request):
         try:
             user = request.user
@@ -16,6 +18,7 @@ class FolderAPI(generics.GenericAPIView):
         except Exception:
             return response_bad_request({'User': 'Unauthenticated'})
 
+    @login_required
     def post(self, request):
         try:
             data = request.data
@@ -41,6 +44,7 @@ class FolderAPI(generics.GenericAPIView):
 class FolderDetailApi(generics.GenericAPIView):
     serializer_class = FolderDetailSerializer
 
+    @login_required
     def put(self, request, id):
         try:
             data = request.data
@@ -64,7 +68,8 @@ class FolderDetailApi(generics.GenericAPIView):
 
         except Folders.DoesNotExist:
             return response_not_found("Folder does not exist.")
-        
+
+    @login_required    
     def delete(self, request, id):
         try:
             folder = Folders.objects.get(id=id)
@@ -78,6 +83,7 @@ class FolderDetailApi(generics.GenericAPIView):
 class OwnFolderAPI(generics.GenericAPIView):
     serialiser_class = FolderSerializer
 
+    @login_required
     def get(self, request, id):
         try:
             user = User.objects.get(id=id)

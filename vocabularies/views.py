@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 import requests
 import json
+from accounts.decorators import login_required
 from utils.make_response import *
 from vocabularies.serializers import *
 
@@ -30,6 +31,7 @@ class SearchingApi(generics.GenericAPIView):
         except Exception:
             return response_bad_request({"Key Word": "Word is not found"})
 
+    @login_required
     def post(self, request):
         
         data = request.data
