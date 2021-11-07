@@ -68,4 +68,19 @@ class SentencesApi(APIView):
     serializer_class = VocabularySerializer
 
     def get(self, request):
-        data = request.data
+        try:
+            keyWord = request.GET.get('keyWord', '')
+            print(keyWord)
+
+            url = "https://tatoeba.org/vi/api_v0/search?from=jpn&to=jpn&query=" + keyWord
+
+            payload = ""
+            headers = {}
+            response = requests.request(
+                "GET", url, headers=headers, data=payload)
+            data = response.text
+            parsed = json.loads(data)
+
+            return Response(data=parsed, status=status.HTTP_200_OK)
+        except Exception:
+            return response_bad_request({"Key Word": "Word is not found"})
