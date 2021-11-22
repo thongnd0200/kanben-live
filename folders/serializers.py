@@ -22,3 +22,9 @@ class FolderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Folders
         exclude = ('user',)
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = "__all__"

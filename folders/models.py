@@ -2,6 +2,11 @@ from django.db import models
 from accounts.models import User
 
 # Create your models here.
+class Topic(models.Model):
+    topic_name = models.CharField(max_length=100, null=True)
+
+    def __str__(self) -> str:
+        return self.topic_name
 
 
 class Folders(models.Model):
@@ -22,6 +27,11 @@ class Folders(models.Model):
     def author_name(self):
         if self.user:
             return self.user.username
+        return None
+
+    def topic_name(self):
+        if self.topic:
+            return self.topic.topic_name
         return None
     
     def list_vocabularies(self):

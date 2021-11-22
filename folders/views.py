@@ -1,5 +1,5 @@
 from rest_framework import generics
-from accounts.decorators import login_required
+from accounts.decorators import login_required, admin_required
 from folders.serializers import *
 from utils.make_response import *
 
@@ -104,3 +104,53 @@ class ListFolderAPI(generics.GenericAPIView):
             return response_ok(data)
         except Exception:
             return response_bad_request("Request denied.")
+
+
+class TopicAPI(generics.GenericAPIView):
+    serializer_class = TopicSerializer
+
+    def get(self, request):
+        try:
+            topic_list = Topic.objects.all()
+            data = TopicSerializer(topic_list, many=True).data
+            return response_ok(data)
+        except Exception:
+            return response_bad_request("Request denied.")
+            
+    @admin_required
+    def post(self, request):
+        try:
+            data = request.data
+            topic_name = data.get('topic_name', '').lower()
+            serializer = self.serializer_class(data={'topic_name': topic_name})
+            
+            if serializer.is_valid() == True:
+                if Topic.objects.filter(topic_name=topic_name).exists():
+                    return response_bad_request({"topic_name": "This topic already exists!"})
+                if topic_name == "":
+                    return response_bad_request({"topic_name": "This field cannot be blank."})
+                serializer.save()
+                return response_ok(serializer.data)
+
+            else:
+                return response_bad_request({"entered_data": "Entered data is invalid."})
+        except Exception:
+            return response_bad_request("Request denied.")
+
+    @admin_required
+    def put(self, request):
+        data = request.data
+        
+        if data.get("id","") != "":
+            try:
+                topic = Topic.objects.get(id=data["id"])
+            except Exception:
+                return response_bad_request("Topic doesn't exists!")
+            if data.get("topic_name", '') != '':
+                if Topic.objects.filter(topic_name=data["topic_name"].lower()).exists():
+                    return response_bad_request({"topic_name": "This Topic already exists!"})
+            topic.topic_name = data['topic_name']
+            topic.save()
+            return response_ok("Topic was updated!")
+        else:
+            return response_bad_request({"id": "topic_id is required!"})

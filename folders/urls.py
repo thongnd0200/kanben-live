@@ -7,4 +7,5 @@ urlpatterns = [
     path('folder/<str:id>', FolderDetailApi.as_view()),
     path('listFolder/<str:id>', OwnFolderAPI.as_view()),
     path('listFolder/', ListFolderAPI.as_view()),
+    path('listTopic/', TopicAPI.as_view()),
 ]
