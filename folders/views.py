@@ -164,3 +164,25 @@ class TopicAPI(generics.GenericAPIView):
             return response_ok("Topic was updated!")
         else:
             return response_bad_request({"id": "topic_id is required!"})
+            
+
+class DeleteTopicAPI(generics.GenericAPIView):
+
+    @admin_required
+    def get(self, request, id):
+        try:
+            topic = Topic.objects.get(id=id)
+            data = TopicSerializer(topic).data
+            return response_ok(data)
+        except Exception:
+            return response_bad_request("Topic does not exist.")
+
+    @admin_required
+    def delete(self, request, id):
+        try:
+            topic = Topic.objects.get(id=id)
+            topic.delete()
+            return response_no_content("Delete successfully.")
+
+        except Folders.DoesNotExist:
+            return response_not_found("Topic does not exist.")
