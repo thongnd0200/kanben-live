@@ -5,6 +5,7 @@ from folders.models import *
 class FolderSerializer(serializers.ModelSerializer):
     author_id = serializers.ReadOnlyField()
     author_name = serializers.ReadOnlyField()
+    topic_name = serializers.ReadOnlyField()
     visibility = serializers.BooleanField(default=True)
     class Meta:
         model = Folders
@@ -17,6 +18,7 @@ class FolderSerializer(serializers.ModelSerializer):
 class FolderDetailSerializer(serializers.ModelSerializer):
     author_id = serializers.ReadOnlyField()
     author_name = serializers.ReadOnlyField()
+    topic_name = serializers.ReadOnlyField()
     result = serializers.ReadOnlyField()
     list_vocabularies = serializers.ReadOnlyField()
     class Meta:

@@ -14,7 +14,7 @@ class Folders(models.Model):
     name = models.CharField(max_length=50, null=True)
     visibility = models.BooleanField(default=True, null=True)
     result = models.IntegerField(null=True)
-
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return self.name
