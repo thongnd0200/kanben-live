@@ -49,13 +49,23 @@ class FolderDetailApi(generics.GenericAPIView):
         try:
             data = request.data
             folder = Folders.objects.get(id=id)
-            for k, v in data.items():
-                if hasattr(folder, k):
-                    setattr(folder, k, v)
-                else:
-                    return response_bad_request(f"Folder object does not have attribute '{k}'")
-            folder.save()
-            return response_ok(FolderDetailSerializer(folder).data)
+            name = data.get('name', '')
+            topic = data.get('topic', '')
+            visibility = data.get('visibility', '')
+
+            serializer = self.serializer_class(data={'name': name, 'topic': topic, 'visibility': visibility})
+            if serializer.is_valid() == True:
+                if name == '':
+                    return response_bad_request({"folder_name": "folder_name can't be blanked"})
+                if topic == '':
+                    return response_bad_request({"topic": "topic can't be blanked"})
+                folder.name = name
+                folder.topic = Topic.objects.get(id=topic)
+                folder.visibility = visibility
+                folder.save()
+                return response_ok(FolderDetailSerializer(folder, context=self.get_serializer_context()).data)
+            else:
+                return response_bad_request({"entered_data": "Entered data is invalid."})
 
         except Folders.DoesNotExist:
             return response_not_found("Folder does not exist.")
