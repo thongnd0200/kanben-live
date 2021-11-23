@@ -8,4 +8,5 @@ urlpatterns = [
     path('listFolder/<str:id>', OwnFolderAPI.as_view()),
     path('listFolder/', ListFolderAPI.as_view()),
     path('listTopic/', TopicAPI.as_view()),
+    path('listTopic/<str:id>', DeleteTopicAPI.as_view()),
 ]
